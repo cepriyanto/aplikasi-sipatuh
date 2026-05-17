@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>SIPATU | Dashboard UKT - Putih & Hijau</title>
+  <!-- Google Fonts + Font Awesome + Chart.js -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f5f7fa;
+      color: #1a2e35;
+      min-height: 100vh;
+    }
+
+    /* Layout Utama */
+    .app {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ========= SIDEBAR PUTIH & HIJAU ========= */
+    .sidebar {
+      width: 280px;
+      background: #ffffff;
+      border-right: 1px solid #e2e8f0;
+      padding: 2rem 1.5rem;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      box-shadow: 2px 0 12px rgba(0, 0, 0, 0.03);
+    }
+
+    .logo {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 2.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid #dcfce7;
+    }
+
+    .logo h1 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #166534;
+      letter-spacing: -0.5px;
+    }
+
+    .logo span {
+      background: #22c55e;
+      font-size: 0.65rem;
+      padding: 2px 8px;
+      border-radius: 40px;
+      color: white;
+      font-weight: 700;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 0.8rem 1rem;
+      margin: 0.4rem 0;
+      border-radius: 0.75rem;
+      font-weight: 500;
+      transition: all 0.2s;
+      cursor: pointer;
+      color: #475569;
+    }
+
+    .nav-item i {
+      width: 24px;
+      font-size: 1.1rem;
+    }
+
+    .nav-item.active, .nav-item:hover {
+      background: #dcfce7;
+      color: #15803d;
+    }
+
+    .logout-item {
+      margin-top: 2rem;
+      padding-top: 1rem;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    /* ========= MAIN CONTENT ========= */
+    .main {
+      flex: 1;
+      padding: 1.8rem 2rem;
+      overflow-x: auto;
+    }
+
+    /* Hero dengan gradien hijau lembut */
+    .hero {
+      background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+      border-radius: 1.5rem;
+      padding: 1.5rem 2rem;
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      border: 1px solid #bbf7d0;
+    }
+
+    .hero-text h2 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #14532d;
+    }
+
+    .hero-text p {
+      color: #2d6a4f;
+      margin-top: 6px;
+    }
+
+    .weather-badge {
+      background: white;
+      padding: 0.6rem 1.3rem;
+      border-radius: 60px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 500;
+      border: 1px solid #86efac;
+      color: #166534;
+    }
+
+    /* 4 kartu stats putih dengan border hijau */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: 1.25rem;
+      padding: 1.3rem 1.2rem;
+      border: 1px solid #e2e8f0;
+      transition: all 0.25s;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    }
+    .stat-card:hover { 
+      transform: translateY(-3px); 
+      border-color: #86efac;
+      box-shadow: 0 8px 20px rgba(34, 197, 94, 0.1);
+    }
+
+    .stat-title { 
+      font-size: 0.7rem; 
+      text-transform: uppercase; 
+      letter-spacing: 1.5px; 
+      font-weight: 600; 
+      color: #64748b; 
+    }
+    .stat-value { 
+      font-size: 2rem; 
+      font-weight: 800; 
+      margin: 0.6rem 0 0.3rem; 
+      color: #166534; 
+    }
+    .stat-sub { 
+      font-size: 0.7rem; 
+      color: #15803d; 
+      display: flex; 
+      align-items: center; 
+      gap: 6px;
+    }
+
+    /* dua kolom ringkasan & pengumuman */
+    .dual-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.8rem;
+      margin-bottom: 2rem;
+    }
+
+    .glass-card {
+      background: white;
+      border-radius: 1.25rem;
+      padding: 1.3rem 1.5rem;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 700;
+      font-size: 1rem;
+      border-bottom: 2px solid #dcfce7;
+      padding-bottom: 0.7rem;
+      margin-bottom: 1rem;
+      color: #166534;
+    }
+
+    .tagihan-detail p {
+      display: flex;
+      justify-content: space-between;
+      margin: 1rem 0;
+      font-weight: 500;
+    }
+    .due-box {
+      background: #f0fdf4;
+      border-radius: 1rem;
+      padding: 0.8rem;
+      margin-top: 0.8rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      border: 1px solid #bbf7d0;
+    }
+    .btn-glow {
+      background: #22c55e;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 2rem;
+      font-weight: 600;
+      color: white;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .btn-glow:hover { background: #15803d; transform: scale(1.02); }
+
+    /* pengumuman */
+    .announce {
+      margin: 0.9rem 0;
+      padding: 0.5rem 0;
+      border-left: 3px solid #22c55e;
+      padding-left: 1rem;
+    }
+    .announce strong { color: #166534; }
+
+    /* tabel riwayat */
+    .table-wrapper {
+      overflow-x: auto;
+      background: white;
+      border-radius: 1.25rem;
+      margin-bottom: 2rem;
+      border: 1px solid #e2e8f0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+    }
+    th, td {
+      padding: 1rem 0.8rem;
+      text-align: left;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    th { color: #166534; font-weight: 700; background: #f8fafc; }
+    .status-lunas { background: #dcfce7; color: #15803d; padding: 0.2rem 0.7rem; border-radius: 40px; font-weight: 600; display: inline-block;}
+    .status-pending { background: #fef3c7; color: #b45309; padding: 0.2rem 0.7rem; border-radius: 40px; font-weight: 600; display: inline-block;}
+
+    /* grafik dan metode */
+    .chart-flex {
+      display: flex;
+      gap: 1.8rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+    .chart-card {
+      flex: 1;
+      background: white;
+      border-radius: 1.25rem;
+      padding: 1rem;
+      border: 1px solid #e2e8f0;
+    }
+    canvas { max-height: 210px; width: 100%; }
+
+    .method-item {
+      display: flex;
+      justify-content: space-between;
+      margin: 0.7rem 0;
+      color: #334155;
+    }
+    .progress {
+      background: #e2e8f0;
+      border-radius: 20px;
+      height: 8px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      background: #22c55e;
+      height: 8px;
+      border-radius: 20px;
+    }
+
+    .footer-note {
+      text-align: center;
+      font-size: 0.7rem;
+      color: #94a3b8;
+      margin-top: 1rem;
+    }
+
+    /* badges */
+    .badge-success {
+      background: #dcfce7;
+      color: #15803d;
+      padding: 0.2rem 0.7rem;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 0.7rem;
+    }
+    .badge-warning {
+      background: #fef3c7;
+      color: #b45309;
+      padding: 0.2rem 0.7rem;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 0.7rem;
+    }
+    .badge-danger {
+      background: #fee2e2;
+      color: #dc2626;
+      padding: 0.2rem 0.7rem;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 0.7rem;
+    }
+
+    @media (max-width: 850px) {
+      .sidebar { width: 80px; padding: 1rem 0.5rem; }
+      .sidebar .nav-item span { display: none; }
+      .logo h1 { font-size: 1rem; }
+      .dual-row { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <!-- SIDEBAR PUTIH -->
+  <aside class="sidebar">
+    <div class="logo">
+      <h1>SIPATU</h1>
+      <span>v.2</span>
+    </div>
+    <div class="nav-item active"><i class="fas fa-tachometer-alt"></i><span> Dashboard</span></div>
+    <div class="nav-item"><i class="fas fa-file-invoice"></i><span> Tagihan</span></div>
+    <div class="nav-item"><i class="fas fa-credit-card"></i><span> Pembayaran</span></div>
+    <div class="nav-item"><i class="fas fa-history"></i><span> Riwayat</span></div>
+    <div class="nav-item"><i class="fas fa-qrcode"></i><span> Virtual Account</span></div>
+    <div class="nav-item"><i class="fas fa-bell"></i><span> Notifikasi</span></div>
+    <div class="logout-item nav-item"><i class="fas fa-sign-out-alt"></i><span> Logout</span></div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+    <!-- Hero dengan nuansa hijau -->
+    <div class="hero">
+      <div class="hero-text">
+        <h2>Selamat datang kembali, Dini Aprilianti 🌿</h2>
+        <p>Kelola pembayaran UKT dan tagihan jadi lebih mudah!</p>
+      </div>
+      <div class="weather-badge">
+        <i class="fas fa-tree"></i> 26°C · Sejuk
+        <i class="fas fa-sun" style="color: #facc15;"></i>
+      </div>
+    </div>
+
+    <!-- 4 Kartu statistik putih-hijau -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-title"><i class="fas fa-receipt"></i> TOTAL TAGIHAN</div>
+        <div class="stat-value">Rp 3.500.000</div>
+        <div class="stat-sub"><i class="fas fa-exclamation-circle"></i> 1 Tagihan belum lunas</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-title"><i class="fas fa-chart-line"></i> TOTAL PEMBAYARAN</div>
+        <div class="stat-value">Rp 7.000.000</div>
+        <div class="stat-sub"><i class="fas fa-check-circle"></i> 2 Kali pembayaran</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-title"><i class="fas fa-hourglass-half"></i> STATUS PEMBAYARAN</div>
+        <div class="stat-value">Belum Lunas</div>
+        <div class="stat-sub"><i class="fas fa-flag"></i> 1 Tagihan belum dibayar</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-title"><i class="fas fa-calendar-week"></i> SEMESTER AKTIF</div>
+        <div class="stat-value">2024/2025</div>
+        <div class="stat-sub">Genap · <i class="fas fa-graduation-cap"></i></div>
+      </div>
+    </div>
+
+    <!-- Ringkasan Tagihan + Pengumuman -->
+    <div class="dual-row">
+      <div class="glass-card">
+        <div class="card-header">
+          <span><i class="fas fa-chart-simple"></i> Ringkasan Tagihan</span>
+          <i class="fas fa-chevron-right" style="color:#22c55e;"></i>
+        </div>
+        <div class="tagihan-detail">
+          <p><span>Total</span><strong>Rp 3.500.000</strong></p>
+          <p><span>Lewat Jatuh Tempo</span><strong>Rp 0</strong></p>
+          <div style="font-size:0.7rem; color:#64748b;">*Semua nominal dalam Rupiah</div>
+          <div class="due-box">
+            <span><i class="fas fa-hourglass-start"></i> Jatuh tempo 17 Hari</span>
+            <span><strong>30 Juni 2025</strong></span>
+            <button class="btn-glow" id="bayarBtn"><i class="fas fa-bolt"></i> Bayar Sekarang</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-card">
+        <div class="card-header">
+          <span><i class="fas fa-bullhorn"></i> Pengumuman</span>
+          <span style="font-size:0.7rem; cursor:pointer; color:#22c55e;" id="lihatSemua">Lihat Semua →</span>
+        </div>
+        <div class="announce">
+          <strong>📢 Pembayaran UKT 2024/2025 Genap</strong><br>
+          Batas akhir pembayaran 30 Juni 2025
+        </div>
+        <div class="announce">
+          <strong>🏦 Perubahan Rekening</strong><br>
+          Mulai 1 Mei 2025, pembayaran hanya melalui Bank Mandiri
+        </div>
+        <div class="announce">
+          <strong>⚙️ Pemeliharaan Sistem</strong><br>
+          25 Mei 2025 pukul 00.00 - 02.00 WIB
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabel Riwayat Pembayaran -->
+    <div class="table-wrapper">
+      <div style="padding: 1rem 0 0 1rem; font-weight:700; color:#166534;">
+        <i class="fas fa-history"></i> Riwayat Pembayaran Terakhir
+      </div>
+      <table>
+        <thead>
+          <tr><th>Tanggal</th><th>Jenis Tagihan</th><th>Jumlah</th><th>Metode</th><th>Status</th><th>Bukti</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>12 Apr 2025</td><td>UKT 2024/2025 Ganjil</td><td><strong>Rp 3.500.000</strong></td><td>Transfer Bank</td><td><span class="status-lunas">Lunas</span></td><td><i class="fas fa-download" style="color:#22c55e; cursor:pointer;"></i></td></tr>
+          <tr><td>01 Jan 2025</td><td>UKT 2023/2024 Genap</td><td><strong>Rp 3.500.000</strong></td><td>E-Wallet</td><td><span class="status-lunas">Lunas</span></td><td><i class="fas fa-download" style="color:#22c55e;"></i></td></tr>
+          <tr><td>10 Sep 2024</td><td>UKT 2024/2025 Ganjil (DP)</td><td><strong>Rp 1.000.000</strong></td><td>Virtual Account</td><td><span class="status-lunas">Lunas</span></td><td><i class="fas fa-download" style="color:#22c55e;"></i></td></tr>
+          <tr><td>20 Feb 2025</td><td>Dana Pengembangan</td><td><strong>Rp 500.000</strong></td><td>Transfer Bank</td><td><span class="status-pending">Pending</span></td><td><i class="fas fa-eye" style="color:#f59e0b;"></i></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Grafik + Metode Pembayaran Favorit -->
+    <div class="chart-flex">
+      <div class="chart-card">
+        <div class="card-header">📊 Grafik Pembayaran 2025</div>
+        <canvas id="paymentChart" width="400" height="200"></canvas>
+        <div style="text-align: center; margin-top: 0.5rem; font-size:0.7rem; color:#64748b;">Progres pembayaran UKT (Rp)</div>
+      </div>
+      <div class="chart-card">
+        <div class="card-header">💳 Metode Pembayaran Favorit</div>
+        <div class="method-item"><span><i class="fas fa-university"></i> Transfer Bank</span><span>60%</span></div>
+        <div class="progress"><div class="progress-fill" style="width:60%"></div></div>
+        <div class="method-item"><span><i class="fab fa-google-pay"></i> E-Wallet</span><span>30%</span></div>
+        <div class="progress"><div class="progress-fill" style="width:30%"></div></div>
+        <div class="method-item"><span><i class="fas fa-qrcode"></i> Virtual Account</span><span>10%</span></div>
+        <div class="progress"><div class="progress-fill" style="width:10%"></div></div>
+        <div style="margin-top: 1rem; background:#f0fdf4; border-radius: 0.75rem; padding: 0.5rem; text-align: center; font-size: 0.7rem; color:#166534;">
+          <i class="fas fa-chart-simple"></i> Dominasi transfer bank & e-wallet
+        </div>
+      </div>
+    </div>
+
+    <!-- Aksi Cepat & Bantuan -->
+    <div class="dual-row" style="margin-bottom: 0;">
+      <div class="glass-card" style="background:#f8fafc;">
+        <div class="card-header">
+          <span><i class="fas fa-bolt"></i> Aksi Cepat</span>
+        </div>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+          <button class="btn-glow" id="quickPayBtn"><i class="fas fa-arrow-right"></i> Lakukan Pembayaran</button>
+          <button class="btn-glow" style="background:#15803d;" id="notifBtn"><i class="fas fa-bell"></i> Pemberitahuan</button>
+          <button class="btn-glow" style="background:#166534;" id="historyBtn"><i class="fas fa-history"></i> Riwayat Lengkap</button>
+        </div>
+        <p style="margin-top: 1rem; font-size: 0.75rem; color:#475569;">
+          <i class="fas fa-mobile-alt"></i> Bayar UKT Makin Mudah. Semua pembayaran dalam satu genggam.
+        </p>
+      </div>
+      <div class="glass-card" style="background:#f0fdf4; border-color:#bbf7d0;">
+        <div class="flex items-center gap-4" style="display: flex; align-items: center; gap: 1rem;">
+          <div>
+            <i class="fas fa-headset" style="font-size: 2rem; color:#22c55e;"></i>
+          </div>
+          <div>
+            <strong style="color:#166534;">Butuh Bantuan?</strong><br>
+            <span style="font-size:0.75rem; color:#475569;">Tim CS kami siap membantu setiap hari kerja.</span>
+          </div>
+          <button class="btn-glow" id="helpBtn" style="margin-left: auto;"><i class="fas fa-comment-dots"></i> Hubungi Sekarang</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-note">
+      <i class="fas fa-shield-alt"></i> Sistem Pembayaran UKT & Tagihan Terpusat · Aman & Terpercaya
+    </div>
+  </main>
+</div>
+
+<script>
+  // Grafik batang dengan tema hijau
+  const ctx = document.getElementById('paymentChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
+      datasets: [
+        {
+          label: 'Terbayar (Rp)',
+          data: [3500000, 0, 0, 0, 0, 0],
+          backgroundColor: '#22c55e',
+          borderRadius: 10,
+          barPercentage: 0.6,
+        },
+        {
+          label: 'Sisa Tagihan',
+          data: [0, 0, 0, 3500000, 0, 0],
+          backgroundColor: '#facc15',
+          borderRadius: 10,
+          barPercentage: 0.6,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: {
+        tooltip: { 
+          callbacks: { 
+            label: (ctx) => `Rp ${ctx.raw.toLocaleString('id-ID')}` 
+          } 
+        },
+        legend: { 
+          labels: { 
+            color: '#166534', 
+            font: { size: 11, weight: '600' } 
+          } 
+        }
+      },
+      scales: {
+        y: { 
+          ticks: { 
+            color: '#475569', 
+            callback: (val) => val>=1e6 ? `Rp${val/1e6}jt` : `Rp${val}` 
+          }, 
+          grid: { color: '#e2e8f0' } 
+        },
+        x: { ticks: { color: '#334155' } }
+      }
+    }
+  });
+
+  // Interaksi tombol
+  document.getElementById('bayarBtn')?.addEventListener('click', () => {
+    alert('💳 Pembayaran UKT: Rp 3.500.000 | Silakan pilih metode pembayaran');
+  });
+  document.getElementById('lihatSemua')?.addEventListener('click', () => {
+    alert('📢 Pengumuman: Pembayaran UKT Genap, Perubahan rekening Bank Mandiri, Maintenance 25 Mei.');
+  });
+  document.getElementById('quickPayBtn')?.addEventListener('click', () => {
+    alert('💸 Halaman pembayaran akan segera terbuka');
+  });
+  document.getElementById('notifBtn')?.addEventListener('click', () => {
+    alert('🔔 Anda memiliki 2 notifikasi: Tagihan mendatang dan promo pembayaran');
+  });
+  document.getElementById('historyBtn')?.addEventListener('click', () => {
+    alert('📜 Menuju halaman riwayat pembayaran lengkap');
+  });
+  document.getElementById('helpBtn')?.addEventListener('click', () => {
+    alert('📞 CS SIPATU: 1500-789 | Email: cs@sipatu.ac.id | WhatsApp: 0812-3456-7890');
+  });
+
+  // Simulasi navigasi sidebar
+  const navs = document.querySelectorAll('.nav-item');
+  navs.forEach(nav => {
+    nav.addEventListener('click', function() {
+      const txt = this.innerText;
+      if(txt.includes('Tagihan')) alert('📄 Tagihan aktif: UKT Rp 3.500.000 | Jatuh tempo 30 Juni 2025');
+      else if(txt.includes('Riwayat')) alert('📜 Lihat semua riwayat pembayaran di tabel bawah');
+      else if(txt.includes('Virtual')) alert('🏦 Virtual Account: 8888 2025 0412 a.n Dini Aprilianti (Bank Mandiri)');
+      else if(txt.includes('Notifikasi')) alert('🔔 Tidak ada notifikasi baru. Pembayaran mendatang 30 Juni');
+      else if(txt.includes('Logout')) alert('🚪 Anda keluar dari SIPATU. Sampai jumpa!');
+      else if(!txt.includes('Dashboard')) alert(`Navigasi menuju ${txt}`);
+    });
+  });
+</script>
+</body>
+</html>
